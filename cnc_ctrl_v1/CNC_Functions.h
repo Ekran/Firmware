@@ -14,11 +14,12 @@
     
 /*Right now this file is a catch all for functions which will be broken out into
 libraries*/
-    
-    
+
+   
 #include "GearMotor.h"
 #include "Axis.h"
 #include "Kinematics.h"
+
 
 #define ZAXIS
 
@@ -40,8 +41,10 @@ libraries*/
 #define MILLIMETERS 1
 #define INCHES      25.4
 
-#define DIST_PER_ROTATION 10*6.35//#teeth*pitch of chain
-#define Z_DIST_PER_ROTATION 635 //1/8inch in mm
+#define DIST_PER_ROTATION 10*6.35
+//#teeth*pitch of chain
+#define Z_DIST_PER_ROTATION 635
+//1/8inch in mm
 
 #define ENCODER1A 18
 #define ENCODER1B 19
@@ -50,6 +53,7 @@ libraries*/
 #define ENCODER3A 21
 #define ENCODER3B 20
 
+// IN1 -IN6 and EAN-ENC are not used for Adafruit Motorshield V2
 #define IN1 9
 #define IN2 8
 #define IN3 10
@@ -61,11 +65,17 @@ libraries*/
 #define ENB 7
 #define ENC 5
 
+#if defined(USE_MOTORSHIELDV2)
 
-Axis leftAxis (ENB, IN3, IN4, ENCODER2A, ENCODER2B, "Left-axis",   LEFT_EEPROM_ADR, DIST_PER_ROTATION);
-Axis rightAxis(ENA, IN1, IN2, ENCODER1A, ENCODER1B, "Right-axis", RIGHT_EEPROM_ADR, DIST_PER_ROTATION);
-Axis zAxis    (ENC, IN6, IN5, ENCODER3B, ENCODER3A, "Z-Axis",         Z_EEPROM_ADR, DIST_PER_ROTATION/19);
-
+  Axis leftAxis (3, ENCODER2A, ENCODER2B, "Left-axis",   LEFT_EEPROM_ADR, DIST_PER_ROTATION);
+  Axis rightAxis(4, ENCODER1A, ENCODER1B, "Right-axis", RIGHT_EEPROM_ADR, DIST_PER_ROTATION);
+  Axis zAxis    (1, ENCODER3B, ENCODER3A, "Z-Axis",         Z_EEPROM_ADR, DIST_PER_ROTATION/19);
+  
+#else
+  Axis leftAxis (ENB, IN3, IN4, ENCODER2A, ENCODER2B, "Left-axis",   LEFT_EEPROM_ADR, DIST_PER_ROTATION);
+  Axis rightAxis(ENA, IN1, IN2, ENCODER1A, ENCODER1B, "Right-axis", RIGHT_EEPROM_ADR, DIST_PER_ROTATION);
+  Axis zAxis    (ENC, IN6, IN5, ENCODER3B, ENCODER3A, "Z-Axis",         Z_EEPROM_ADR, DIST_PER_ROTATION/19);
+#endif
 
 Kinematics kinematics;
 

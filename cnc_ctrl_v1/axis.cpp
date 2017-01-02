@@ -19,6 +19,7 @@
 #include "Arduino.h"
 #include "Axis.h"
 
+// todo: check against motorshield V2 defines!?
 #define FORWARD 1
 #define BACKWARD -1
 
@@ -29,14 +30,21 @@
 #define NUMBER_OF_ENCODER_STEPS 8148.0 
 
 
-
-Axis::Axis(int pwmPin, int directionPin1, int directionPin2, int encoderPin1, int encoderPin2, String axisName, int eepromAdr, float mmPerRotation)
+#if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+  Axis::Axis(int NMotor, int encoderPin1, int encoderPin2, String axisName, int eepromAdr, float mmPerRotation)
+#else
+  Axis::Axis(int pwmPin, int directionPin1, int directionPin2, int encoderPin1, int encoderPin2, String axisName, int eepromAdr, float mmPerRotation)
+#endif
 :
 _encoder(encoderPin1,encoderPin2)
 {
     
     //initialize motor
-    _motor.setupMotor(pwmPin, directionPin1, directionPin2);
+    #if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+      _motor.setupMotor(NMotor);
+    #else
+      _motor.setupMotor(pwmPin, directionPin1, directionPin2);
+    #endif
     
     _pidController.setup(&_pidInput, &_pidOutput, &_pidSetpoint, _Kp, _KiFar, _Kd, REVERSE);
     

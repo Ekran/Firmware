@@ -12,6 +12,8 @@
     
     Copyright 2014 Bar Smith*/
     
+/* If you use the Adafruit Motorshield instead of Maslow Power PCB uncomment following line */
+// #define USE_MOTORSHIELDV2
     
 #include "CNC_Functions.h"
 #include "TimerOne.h"

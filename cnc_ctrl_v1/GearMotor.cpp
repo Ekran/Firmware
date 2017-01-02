@@ -21,8 +21,20 @@ to be a drop in replacement for a continuous rotation servo.
 
 */
 
+
+#if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+  #include <Wire.h>
+  #include <Adafruit_MotorShield.h>
+  #include "utility/Adafruit_MS_PWMServoDriver.h"
+#endif
+
 #include "Arduino.h"
 #include "GearMotor.h"
+
+#if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+  // Create the motor shield object with the default I2C address
+  Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
+#endif
 
 GearMotor::GearMotor(){
   //Serial.println("created gear motor");
@@ -32,14 +44,19 @@ GearMotor::GearMotor(){
   
 }
 
+
+#if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+int  GearMotor::setupMotor(int MNumber){
+  myMotor = AFMS.getMotor(MNumber);
+  AFMS.begin(1600);
+  myMotor->run(RELEASE); // stop motor
+#else 
 int  GearMotor::setupMotor(int pwmPin, int pin1, int pin2){
-  
   //store pin numbers as private variables
   _pwmPin = pwmPin;
   _pin1  = pin1;
   _pin2  = pin2;
-  _attachedState = 1;
-  
+    
   //set pinmodes
   pinMode(_pwmPin,   OUTPUT); 
   pinMode(_pin1,     OUTPUT); 
@@ -49,7 +66,8 @@ int  GearMotor::setupMotor(int pwmPin, int pin1, int pin2){
   digitalWrite(_pin1,    HIGH);
   digitalWrite(_pin2,    LOW) ;
   digitalWrite(_pwmPin,  LOW);
-  
+#endif   
+  _attachedState = 1;
   return 1;
 }
 
@@ -59,11 +77,15 @@ void GearMotor::attach(int pin){
 
 void GearMotor::detach(){
     _attachedState = 0;
-    
+
     //stop the motor
-    digitalWrite(_pin1,    HIGH);
-    digitalWrite(_pin2,    LOW) ;
-    digitalWrite(_pwmPin,  LOW);
+    #if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+      myMotor->run(RELEASE);
+    #else 
+      digitalWrite(_pin1,    HIGH);
+      digitalWrite(_pin2,    LOW) ;
+      digitalWrite(_pwmPin,  LOW);
+    #endif
 }
 
 void GearMotor::write(int speed){
@@ -77,16 +99,30 @@ void GearMotor::write(int speed){
         
         //set direction range is 0-180
         if (speed > 0){
-            digitalWrite(_pin1 , HIGH);
-            digitalWrite(_pin2 , LOW );
-            speed = speed;
+            #if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+              myMotor->run(FORWARD);
+            #else 
+              digitalWrite(_pin1 , HIGH);
+              digitalWrite(_pin2 , LOW );
+              
+            #endif
+          speed = speed;
+            
+
         }
         else if (speed == 0){
-            speed = speed;
+            #if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+              myMotor->run(RELEASE);
+            #endif
+          speed = speed;
         }
         else{
-            digitalWrite(_pin1 , LOW);
-            digitalWrite(_pin2 , HIGH );
+            #if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+              myMotor->run(BACKWARD);
+            #else 
+              digitalWrite(_pin1 , LOW);
+              digitalWrite(_pin2 , HIGH );
+            #endif
             speed = speed;
         }
         
@@ -96,10 +132,14 @@ void GearMotor::write(int speed){
         if (speed < -255)  {speed = -255;  }
         
         speed = abs(speed); //remove sign from input because direction is set by control pins on H-bridge
+        #if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+          myMotor->setSpeed(round(speed));
+        #else 
+          int pwmFrequency = round(speed);
         
-        int pwmFrequency = round(speed);
-        
-        analogWrite(_pwmPin, pwmFrequency);
+          analogWrite(_pwmPin, pwmFrequency);
+        #endif        
+
         
     }
 }

@@ -14,6 +14,7 @@
     along with the Makesmith Control Software.  If not, see <http://www.gnu.org/licenses/>.
     
     Copyright 2014-2016 Bar Smith*/
+
     
     #ifndef Axis_h
     #define Axis_h
@@ -27,7 +28,11 @@
 
     class Axis{
         public:
-            Axis(int pwmPin, int directionPin1, int directionPin2, int encoderPin1, int encoderPin2, String axisName, int eepromAdr, float mmPerRotation);
+            #if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+              Axis(int NMotor, int encoderPin1, int encoderPin2, String axisName, int eepromAdr, float mmPerRotation);
+            #else
+              Axis(int pwmPin, int directionPin1, int directionPin2, int encoderPin1, int encoderPin2, String axisName, int eepromAdr, float mmPerRotation);
+            #endif
             int    write(float targetPosition);
             float  read();
             int    set(float newAxisPosition);

@@ -18,6 +18,12 @@
     #ifndef GearMotor_h
     #define GearMotor_h
 
+    #if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+      #include <Wire.h>
+      #include <Adafruit_MotorShield.h>
+      #include "utility/Adafruit_MS_PWMServoDriver.h"
+    #endif
+    
     #include "Arduino.h"
     
     struct LinSegment{
@@ -35,7 +41,11 @@
         public:
             GearMotor();
             void attach(int pin);
-            int  setupMotor(int pwmPin, int pin1, int pin2);
+            #if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+              int setupMotor(int MNumber);
+            #else
+              int setupMotor(int pwmPin, int pin1, int pin2);
+            #endif
             void detach();
             void write(int speed);
             int  attached();
@@ -43,9 +53,14 @@
             void setSegment(int index, float slope, float intercept, int negativeBound, int positiveBound);
             LinSegment getSegment(int index);
         private:
-            int _pwmPin;
-            int _pin1;
-            int _pin2;
+            #if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+              Adafruit_DCMotor *myMotor;
+            #else
+              int _pwmPin;
+              int _pin1;
+              int _pin2;
+            #endif        
+
             bool _attachedState;
             LinSegment _linSegments[4];
             
