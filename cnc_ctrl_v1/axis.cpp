@@ -29,22 +29,21 @@
 
 #define NUMBER_OF_ENCODER_STEPS 8148.0 
 
-
-#if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+#ifdef USE_MOTORSHIELDV2 // see GearMotor.h
   Axis::Axis(int NMotor, int encoderPin1, int encoderPin2, String axisName, int eepromAdr, float mmPerRotation)
+  :
+  _encoder(encoderPin1,encoderPin2)
+  {
+    _motor.setupMotor(NMotor);
 #else
   Axis::Axis(int pwmPin, int directionPin1, int directionPin2, int encoderPin1, int encoderPin2, String axisName, int eepromAdr, float mmPerRotation)
+  :
+  _encoder(encoderPin1,encoderPin2)
+  {
+    _motor.setupMotor(pwmPin, directionPin1, directionPin2);
 #endif
-:
-_encoder(encoderPin1,encoderPin2)
-{
+
     
-    //initialize motor
-    #if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
-      _motor.setupMotor(NMotor);
-    #else
-      _motor.setupMotor(pwmPin, directionPin1, directionPin2);
-    #endif
     
     _pidController.setup(&_pidInput, &_pidOutput, &_pidSetpoint, _Kp, _KiFar, _Kd, REVERSE);
     
