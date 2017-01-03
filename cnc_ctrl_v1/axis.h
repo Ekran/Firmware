@@ -28,7 +28,7 @@
 
     class Axis{
         public:
-            #if defined(USE_MOTORSHIELDV2) // see CNC_Functions.h
+            #ifdef USE_MOTORSHIELDV2 // see GearMotor.h
               Axis(int NMotor, int encoderPin1, int encoderPin2, String axisName, int eepromAdr, float mmPerRotation);
             #else
               Axis(int pwmPin, int directionPin1, int directionPin2, int encoderPin1, int encoderPin2, String axisName, int eepromAdr, float mmPerRotation);
