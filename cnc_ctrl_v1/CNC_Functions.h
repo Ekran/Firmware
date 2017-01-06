@@ -64,7 +64,7 @@ libraries*/
 #define ENB 7
 #define ENC 5
 
-#ifdef USE_MOTORSHIELDV2
+#ifdef USE_MOTORSHIELDV2 // see GearMotor.h
 
   Axis leftAxis (3, ENCODER2A, ENCODER2B, "Left-axis",   LEFT_EEPROM_ADR, DIST_PER_ROTATION);
   Axis rightAxis(4, ENCODER1A, ENCODER1B, "Right-axis", RIGHT_EEPROM_ADR, DIST_PER_ROTATION);

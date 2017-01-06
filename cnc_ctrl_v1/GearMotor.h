@@ -15,6 +15,7 @@ along with the Makesmith Control Software.  If not, see <http://www.gnu.org/lice
 
 Copyright 2014-2016 Bar Smith*/
 
+/* If you use the Adafruit Motorshield instead of Maslow Power PCB, uncomment following line */
 //#define USE_MOTORSHIELDV2
 
 #ifndef GearMotor_h
@@ -57,7 +58,7 @@ Copyright 2014-2016 Bar Smith*/
           void setSegment(int index, float slope, float intercept, int negativeBound, int positiveBound);
           LinSegment getSegment(int index);
       private:
-          #if defined(USE_MOTORSHIELDV2) 
+          #ifdef USE_MOTORSHIELDV2
             // see CNC_Functions.h
             Adafruit_DCMotor *myMotor;
           #else
